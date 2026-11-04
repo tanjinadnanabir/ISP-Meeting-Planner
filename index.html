@@ -1,0 +1,299 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Team Meeting Time Planner</title>
+<meta name="description" content="Find the best meeting time across time zones. See every teammate’s day at once, then share the exact time as a link.">
+<meta name="theme-color" content="#0b5d57">
+<meta property="og:title" content="Team Meeting Time Planner">
+<meta property="og:description" content="Find the kindest meeting time across time zones and share it in one link.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 100 100%27%3E%3Ctext y=%27.9em%27 font-size=%2790%27%3E🌍%3C/text%3E%3C/svg%3E">
+<style>
+:root{--bg:#eaf0f6;--card:#fff;--text:#13213c;--muted:#5a6985;--border:#dbe3ee;--accent:#0f766e;--accent2:#e6f5f2;--g:#b4e8ca;--gt:#0a4a29;--o:#fbe2a0;--ot:#6a4200;--b:#d3d9e7;--bt:#8390aa;color-scheme:light;--lw:172px;--cw:30px;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#090f1a;--card:#131b2a;--text:#e6ecf7;--muted:#93a1bd;--border:#25304a;--accent:#2dd4bf;--accent2:#11302e;--g:#1c5a3b;--gt:#c8f6dc;--o:#5a4311;--ot:#fde6a9;--b:#0d1421;--bt:#566480;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#090f1a;--card:#131b2a;--text:#e6ecf7;--muted:#93a1bd;--border:#25304a;--accent:#2dd4bf;--accent2:#11302e;--g:#1c5a3b;--gt:#c8f6dc;--o:#5a4311;--ot:#fde6a9;--b:#0d1421;--bt:#566480;color-scheme:dark}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font:15px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;-webkit-text-size-adjust:100%}
+.wrap{max-width:1120px;width:100%;margin:0 auto;padding:14px 14px 56px;display:grid;grid-template-columns:minmax(0,1fr);gap:14px}
+.wrap>*{min-width:0}
+html,body{max-width:100%;overflow-x:clip}
+h2{margin:0 0 10px;font-size:17px;letter-spacing:-.01em}
+.hero{border-radius:18px;padding:22px 22px 18px;color:#fff;background:radial-gradient(900px 260px at 85% -20%,rgba(255,214,120,.55),transparent 60%),linear-gradient(115deg,#0b5d57,#15539c 55%,#272a6e);display:flex;justify-content:space-between;gap:14px;flex-wrap:wrap;align-items:flex-start}
+.hero h1{margin:0;font-size:clamp(22px,4.4vw,32px);letter-spacing:-.025em;line-height:1.15}
+.hero p{margin:6px 0 0;opacity:.9;max-width:46ch}
+.hero .btn{background:rgba(255,255,255,.14);border-color:rgba(255,255,255,.35);color:#fff;backdrop-filter:blur(6px)}
+.card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:16px}
+.btn,button,select,input{font:inherit;color:var(--text)}
+.btn{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:8px 13px;cursor:pointer;transition:transform .12s,border-color .12s}
+.btn:hover{border-color:var(--accent)}.btn:active{transform:scale(.97)}
+.btn.pri{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:600}
+:root[data-theme="dark"] .btn.pri{color:#04201d}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .btn.pri{color:#04201d}}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+a.btn{text-decoration:none;display:inline-block}
+input,select{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:8px 10px;min-width:0;max-width:100%}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.clocks{display:flex;gap:10px;overflow-x:auto;scroll-snap-type:x proximity;padding:2px 2px 8px;margin:0 -2px}
+.ck{flex:1 0 148px;scroll-snap-align:start;border-radius:14px;padding:11px 13px;cursor:pointer;border:2px solid transparent;text-align:left}
+.ck.k0{background:var(--g);color:var(--gt)}.ck.k1{background:var(--o);color:var(--ot)}.ck.k2{background:var(--b);color:var(--text)}
+.ck.cur{border-color:var(--accent)}.ck.off{opacity:.5}
+.ck .n{font-weight:600;font-size:13.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ck .t{font-size:24px;font-weight:700;letter-spacing:-.02em;font-variant-numeric:tabular-nums;line-height:1.15}
+.ck .s{font-size:11.5px;opacity:.85}
+.ctl{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(200px,100%),1fr));gap:12px}
+.ctl label,.fl{display:grid;gap:4px;font-size:13px;color:var(--muted)}
+.dt{display:flex;gap:6px}.dt input{flex:1}
+.best{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(260px,100%),1fr));gap:10px}
+.bc{text-align:left;background:var(--card);border:1px solid var(--border);border-radius:13px;padding:12px;cursor:pointer;display:grid;gap:7px}
+.bc:hover,.bc.on{border-color:var(--accent);background:var(--accent2)}
+.bc b{font-size:15.5px}
+.tag{font-size:12.5px;color:var(--muted)}
+.meter{height:6px;border-radius:9px;background:var(--b);overflow:hidden}.meter i{display:block;height:100%;background:linear-gradient(90deg,#f59e0b,#22c55e)}
+.chips{display:flex;flex-wrap:wrap;gap:4px}
+.ch{font-size:11.5px;padding:2px 8px;border-radius:99px;white-space:nowrap}
+.k0.ch,.ch.k0{background:var(--g);color:var(--gt)}.ch.k1{background:var(--o);color:var(--ot)}.ch.k2{background:var(--b);color:var(--bt)}
+.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}.between{justify-content:space-between}
+.legend{display:flex;gap:10px;font-size:12.5px;color:var(--muted);flex-wrap:wrap}
+.legend span::before{content:"";display:inline-block;width:11px;height:11px;border-radius:3px;margin-right:5px;vertical-align:-1px}
+.legend .l0::before{background:var(--g)}.legend .l1::before{background:var(--o)}.legend .l2::before{background:var(--b)}
+.scroll{overflow-x:auto;border:1px solid var(--border);border-radius:12px;margin-top:8px;-webkit-overflow-scrolling:touch}
+.grid{display:grid;grid-template-columns:var(--lw) repeat(48,var(--cw));position:relative;width:max-content}
+.lab{position:sticky;left:0;z-index:3;background:var(--card);padding:6px 10px;display:flex;gap:8px;align-items:center;border-bottom:1px solid var(--border);border-right:1px solid var(--border);min-height:44px}
+.lab i{width:10px;height:10px;border-radius:50%;flex:none}
+.lab b{display:block;font-size:13.5px;line-height:1.2;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:130px}
+.lab small{color:var(--muted);font-size:11.5px;line-height:1.2;display:block}
+.hd2{font-size:11px;color:var(--muted);padding:12px 0 0 4px;border-left:1px solid var(--border);border-bottom:1px solid var(--border)}
+.c{height:44px;display:flex;align-items:center;justify-content:center;font-size:10.5px;cursor:pointer;user-select:none;border-bottom:1px solid var(--card)}
+.c:nth-child(odd){border-left:1px solid rgba(127,127,127,.16)}
+.c.k0{background:var(--g);color:var(--gt)}.c.k1{background:var(--o);color:var(--ot)}.c.k2{background:var(--b);color:var(--bt)}
+.c:hover{filter:brightness(.93)}.c.t{font-weight:700;font-size:12px}
+.ov{position:absolute;top:0;bottom:0;border:2px solid var(--accent);background:rgba(45,212,191,.14);border-radius:6px;pointer-events:none;z-index:2}
+.now{position:absolute;top:0;bottom:0;width:2px;background:#ef4444;z-index:2;pointer-events:none}
+.hint{margin:8px 0 0;color:var(--muted);font-size:13px}
+.big{font-size:21px;font-weight:700;letter-spacing:-.015em}
+.sr{display:grid;grid-template-columns:auto 1fr auto;gap:2px 10px;align-items:center;padding:9px 0;border-bottom:1px solid var(--border)}
+.sr i{width:10px;height:10px;border-radius:50%}
+.sr .tm{grid-column:2 / span 2;font-variant-numeric:tabular-nums}
+.setat{margin-top:14px;padding:12px;border-radius:12px;background:var(--accent2);display:grid;gap:8px}
+.acts{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+.pr{border:1px solid var(--border);border-radius:13px;padding:12px;display:grid;gap:8px;margin-top:10px}
+.pr.lead{border-color:var(--accent);background:var(--accent2)}
+.vb{display:flex;gap:6px;flex-wrap:wrap}
+.vb .btn.on{border-color:var(--accent);background:var(--accent);color:#fff}
+details summary{cursor:pointer;font-weight:600;font-size:16px}
+.mr{display:grid;grid-template-columns:14px 1.3fr 1.6fr 64px 64px auto auto;gap:8px;align-items:center;margin-top:10px}
+.mr i{width:12px;height:12px;border-radius:50%}
+#toast{position:fixed;left:50%;bottom:calc(76px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--text);color:var(--bg);padding:9px 16px;border-radius:99px;font-size:14px;opacity:0;pointer-events:none;transition:opacity .2s;z-index:20;max-width:90vw;text-align:center}
+#toast.on{opacity:1}
+#dock{display:none}
+@media (max-width:760px){
+ :root{--lw:112px;--cw:26px}
+ .wrap{padding:8px 8px 100px;gap:10px}.hero{padding:14px 14px}.hero p{font-size:13.5px;margin-top:4px}.ck{flex-basis:132px;padding:9px 11px}.ck .t{font-size:21px}.card{padding:13px;border-radius:14px}
+ .lab b{max-width:76px}.lab{padding:6px}.lab small{font-size:10.5px}
+ .mr{grid-template-columns:14px 1fr 1fr 56px 56px}.mr label,.mr .rm{grid-column:span 5}
+ .btn{padding:10px 13px}
+ .acts .btn{flex:1 1 44%;text-align:center}
+ #dock{display:flex;position:fixed;left:10px;right:10px;bottom:calc(10px + env(safe-area-inset-bottom,0px));z-index:15;background:var(--card);border:1px solid var(--accent);border-radius:16px;padding:9px 10px 9px 14px;gap:10px;align-items:center;justify-content:space-between;box-shadow:0 8px 30px rgba(0,0,0,.25)}
+ #dock b{display:block;font-size:14px;line-height:1.25}#dock small{color:var(--muted)}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<main class="wrap">
+<header class="hero">
+ <div><h1>🌍 Meeting Time Planner</h1><p>See every teammate’s day at once, find the kindest overlap, then share the exact time as a link.</p></div>
+ <div class="row"><button class="btn" id="h24">12-hour</button><button class="btn" id="thm">Theme: auto</button></div>
+</header>
+
+<div class="clocks" id="clocks" aria-label="Local time for each teammate"></div>
+
+<section class="card ctl">
+ <label>Meeting title<input id="title" maxlength="80"></label>
+ <label>Date<div class="dt"><button class="btn" id="prev" aria-label="Previous day">‹</button><input type="date" id="date"><button class="btn" id="next" aria-label="Next day">›</button></div></label>
+ <label>Length<select id="dur"><option value="30">30 min</option><option value="45">45 min</option><option value="60">60 min</option><option value="90">90 min</option><option value="120">2 hours</option></select></label>
+ <label>Timeline in<select id="ref"></select></label>
+</section>
+
+<section class="card"><h2>Best times for this day</h2><div id="best" class="best"></div></section>
+
+<section class="card">
+ <div class="row between"><h2 style="margin:0">Everyone’s day</h2><div class="legend"><span class="l0">Working hours</span><span class="l1">Awake, outside hours</span><span class="l2">Night</span><span><b style="color:#ef4444">|</b> Now</span></div></div>
+ <div class="scroll" id="scr"><div class="grid" id="grid"></div></div>
+ <p class="hint">Tap a slot to choose the start. Tap a clock above to view the timeline in that person’s time.</p>
+</section>
+
+<section class="card" id="sel"></section>
+
+
+<details class="card">
+ <summary>Team and working hours</summary>
+ <p class="hint">Rename people, change time zones or working hours, or switch someone off for this meeting. Saved on this device.</p>
+ <div id="set"></div>
+ <div class="acts"><button class="btn" id="add">Add person</button><button class="btn" id="reset">Reset to defaults</button></div>
+ <datalist id="tzl"></datalist>
+</details>
+</main>
+<div id="dock"><div id="dtx"></div><button class="btn pri" id="dcp">Copy</button></div>
+<div id="toast"></div>
+
+<script>
+const $=s=>document.querySelector(s);
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const COL=['#ef6c57','#3b82f6','#f5a524','#a855f7','#14b8a6','#ec4899','#84cc16','#64748b'];
+const DEF=[['California','America/Los_Angeles'],['Montreal','America/Toronto'],['Ghana','Africa/Accra'],['Switzerland','Europe/Zurich'],['Oman','Asia/Muscat'],['Bangladesh','Asia/Dhaka']];
+const mk=(n,tz,i)=>({n,tz,ws:9,we:18,on:true,c:COL[i%8]});
+const fresh=()=>({m:DEF.map((d,i)=>mk(d[0],d[1],i)),dur:60,h24:false,title:'Neuromatch ISP team meeting',theme:'auto',ref:'Asia/Dhaka'});
+let S=fresh(),sel=null,date='',spi=0;
+try{const r=JSON.parse(localStorage.getItem('mtp-v1')||'null');if(r&&r.m&&r.m.length)S=Object.assign(fresh(),r)}catch(e){}
+const save=()=>{try{localStorage.setItem('mtp-v1',JSON.stringify(S))}catch(e){}};
+
+/* time helpers */
+const FC={};
+function P(ms,tz){const f=FC[tz]||(FC[tz]=new Intl.DateTimeFormat('en-US',{timeZone:tz,hourCycle:'h23',year:'numeric',month:'numeric',day:'numeric',hour:'numeric',minute:'numeric',weekday:'short'}));const o={};for(const p of f.formatToParts(ms))o[p.type]=p.value;return{y:+o.year,mo:+o.month,d:+o.day,h:+o.hour%24,mi:+o.minute,wd:o.weekday}}
+const off=(ms,tz)=>{const p=P(ms,tz);return(Date.UTC(p.y,p.mo-1,p.d,p.h,p.mi)-Math.floor(ms/60000)*60000)/60000};
+function zoned(y,mo,d,h,mi,tz){const g=Date.UTC(y,mo-1,d,h,mi);let o=off(g,tz),t=g-o*60000;const o2=off(t,tz);if(o2!==o)t=g-o2*60000;return t}
+const pad=n=>String(n).padStart(2,'0');
+const T=(ms,tz)=>{const p=P(ms,tz);return S.h24?pad(p.h)+':'+pad(p.mi):(p.h%12||12)+':'+pad(p.mi)+(p.h<12?' AM':' PM')};
+const D=(ms,tz)=>new Intl.DateTimeFormat('en-US',{timeZone:tz,weekday:'short',month:'short',day:'numeric'}).format(ms);
+function OL(ms,tz){const o=off(ms,tz),a=Math.abs(o),m=a%60;return 'UTC'+(o<0?'−':'+')+Math.floor(a/60)+(m?':'+pad(m):'')}
+const cl=(ms,m)=>{const p=P(ms,m.tz),h=p.h+p.mi/60;return h>=m.ws&&h<m.we?0:(h>=7&&h<22?1:2)};
+const worst=(ms,m,dur)=>{let w=0;for(let t=0;t<dur;t+=15)w=Math.max(w,cl(ms+t*60000,m));return Math.max(w,cl(ms+dur*60000-60000,m))};
+const act=()=>S.m.filter(m=>m.on);
+const SL=['Working hours','Outside work hours','Night'];
+const refName=()=>{const m=S.m.find(x=>x.tz===S.ref);return m?m.n:S.ref};
+const ymd=(ms,tz)=>{const p=P(ms,tz);return p.y+'-'+pad(p.mo)+'-'+pad(p.d)};
+const hl=h=>S.h24?pad(h):(h%12||12)+(h<12?'a':'p');
+function dayStart(){const[y,mo,d]=date.split('-').map(Number);return zoned(y,mo,d,0,0,S.ref)}
+const selMs=()=>dayStart()+sel*1800000;
+const comfort=w=>w.length?Math.round(100*w.reduce((a,x)=>a+(x==0?1:x==1?.6:0),0)/w.length):0;
+
+function bestSlots(){
+ const st=dayStart(),A=act(),dur=+S.dur,r=[];
+ if(!A.length)return r;
+ for(let i=0;i<48;i++){const t=st+i*1800000,w=A.map(m=>worst(t,m,dur));r.push({i,t,w,b:w.filter(x=>x==2).length,o:w.filter(x=>x==1).length})}
+ r.sort((a,b)=>a.b-b.b||a.o-b.o||a.i-b.i);
+ const out=[];for(const x of r){if(out.every(y=>Math.abs(y.i-x.i)>3))out.push(x);if(out.length==5)break}
+ return out;
+}
+function setFromMs(ms){date=ymd(ms,S.ref);const st=dayStart();sel=Math.min(47,Math.max(0,Math.round((ms-st)/1800000)));$('#date').value=date;all();scrollSel()}
+
+/* renderers */
+function renderClocks(){
+ const now=Date.now();
+ $('#clocks').innerHTML=S.m.map((m,i)=>{const p=P(now,m.tz),k=cl(now,m),h=p.h;
+  const em=h>=5&&h<7?'🌅':h>=7&&h<17?'☀️':h>=17&&h<20?'🌆':'🌙';
+  return `<button class="ck k${k} ${m.tz===S.ref?'cur':''} ${m.on?'':'off'}" data-tz="${esc(m.tz)}" title="Show timeline in ${esc(m.n)}’s time"><div class="n">${em} ${esc(m.n)}</div><div class="t">${T(now,m.tz)}</div><div class="s">${p.wd} · ${OL(now,m.tz)}</div></button>`}).join('');
+}
+function renderBest(){
+ const A=act(),B=bestSlots(),dur=+S.dur;
+ if(!B.length){$('#best').innerHTML='<p class="hint">Switch on at least one person in “Team and working hours”.</p>';return}
+ $('#best').innerHTML=B.map((x,k)=>{
+  const end=x.t+dur*60000,cf=comfort(x.w);
+  const lab=x.b==0&&x.o==0?'✅ Everyone is in working hours':x.b==0?'🟡 '+x.o+' of '+A.length+' outside working hours':'🌙 '+x.b+' at night · '+x.o+' outside hours';
+  return `<button class="bc ${sel===x.i?'on':''}" data-b="${x.i}"><b>${k==0?'⭐ ':''}${D(x.t,S.ref)} · ${T(x.t,S.ref)}–${T(end,S.ref)}</b><span class="tag">${lab}</span><span class="meter" title="Team comfort ${cf}%"><i style="width:${cf}%"></i></span><span class="tag">Team comfort ${cf}%</span><span class="chips">${A.map((m,j)=>`<span class="ch k${x.w[j]}">${esc(m.n.slice(0,12))} ${T(x.t,m.tz)}</span>`).join('')}</span></button>`}).join('');
+}
+function renderGrid(){
+ const st=dayStart(),A=act();let h=`<div class="lab"><div><small>Hours shown in</small><b>${esc(refName())}</b></div></div>`;
+ for(let k=0;k<24;k++)h+=`<div class="hd2" style="grid-column:span 2">${hl(P(st+k*3600000,S.ref).h)}</div>`;
+ if(!A.length){$('#grid').innerHTML='<p class="hint" style="padding:12px">No one selected.</p>';return}
+ h+=`<div class="lab"><div><b>Team overlap</b><small>people in working hours</small></div></div>`;
+ for(let i=0;i<48;i++){const t=st+i*1800000,w=A.map(m=>cl(t,m)),g=w.filter(x=>!x).length,k=w.every(x=>!x)?0:w.includes(2)?2:1;h+=`<div class="c t k${k}" data-i="${i}" title="${D(t,S.ref)} ${T(t,S.ref)}: ${g} of ${A.length} in working hours">${g}</div>`}
+ const now=Date.now();
+ for(const m of A){
+  h+=`<div class="lab"><i style="background:${m.c}"></i><div><b>${esc(m.n)}</b><small>${OL(st,m.tz)} · now ${T(now,m.tz)}</small></div></div>`;
+  for(let i=0;i<48;i++){const t=st+i*1800000,p=P(t,m.tz),k=cl(t,m);
+   const txt=p.mi==0?(p.h==0?'<b>'+p.wd+'</b>':hl(p.h)):'';
+   h+=`<div class="c k${k}" data-i="${i}" title="${esc(m.n)}: ${p.wd} ${T(t,m.tz)}">${txt}</div>`}
+ }
+ const nx=(now-st)/1800000;
+ if(sel!==null)h+=`<div class="ov" style="left:calc(var(--lw) + ${sel}*var(--cw));width:calc(${S.dur/30}*var(--cw))"></div>`;
+ if(nx>=0&&nx<48)h+=`<div class="now" style="left:calc(var(--lw) + ${nx}*var(--cw))"></div>`;
+ $('#grid').innerHTML=h;
+}
+function inviteText(){
+ const t=selMs(),e=t+S.dur*60000,u=new Intl.DateTimeFormat('en-GB',{timeZone:'UTC',hour:'2-digit',minute:'2-digit',hourCycle:'h23'});
+ return '📅 '+S.title+'\n🌐 UTC: '+D(t,'UTC')+', '+u.format(t)+'–'+u.format(e)+'\n\n'+act().map(m=>'• '+m.n+': '+D(t,m.tz)+', '+T(t,m.tz)+'–'+T(e,m.tz)+' ('+OL(t,m.tz)+')').join('\n')+'\n\nPlanned with the Meeting Time Planner.';
+}
+const zf=ms=>new Date(ms).toISOString().replace(/[-:]/g,'').replace(/\.\d+/,'');
+function icsText(txt){const t=selMs(),e=t+S.dur*60000;return ['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//Meeting Time Planner//EN','BEGIN:VEVENT','UID:'+t+'@meeting-time-planner','DTSTAMP:'+zf(Date.now()),'DTSTART:'+zf(t),'DTEND:'+zf(e),'SUMMARY:'+S.title.replace(/[,;]/g,' '),'DESCRIPTION:'+txt.replace(/\n/g,'\\n').replace(/,/g,'\\,'),'END:VEVENT','END:VCALENDAR'].join('\r\n')}
+function renderSel(){
+ const el=$('#sel'),A=act();
+ if(sel===null||!A.length){el.innerHTML='<h2>Your meeting</h2><p class="hint">Pick a best time above or tap a slot on the timeline.</p>';$('#dock').style.visibility='hidden';return}
+ const t=selMs(),e=t+S.dur*60000,txt=inviteText(),worstAll=Math.max(...A.map(m=>worst(t,m,S.dur)));
+ if(spi>=S.m.length)spi=0;const sm=S.m[spi];
+ const gc='https://calendar.google.com/calendar/render?action=TEMPLATE&text='+encodeURIComponent(S.title)+'&dates='+zf(t)+'/'+zf(e)+'&details='+encodeURIComponent(txt);
+ const pp=P(t,sm.tz);
+ el.innerHTML=`<h2>Your meeting</h2><div class="big">${esc(S.title)}</div><div class="tag" style="margin-bottom:4px">${D(t,S.ref)}, ${T(t,S.ref)}–${T(e,S.ref)} in ${esc(refName())} · ${S.dur} min · comfort ${comfort(A.map(m=>worst(t,m,S.dur)))}%</div>`+
+  (worstAll==2?'<p class="hint">🌙 This slot is at night for someone. “Best times for this day” has kinder options.</p>':'')+
+  A.map(m=>{const k=worst(t,m,S.dur);return `<div class="sr"><i style="background:${m.c}"></i><div><b>${esc(m.n)}</b> <span class="tag">${OL(t,m.tz)}</span></div><span class="ch k${k}">${SL[k]}</span><div class="tm">${D(t,m.tz)} · ${T(t,m.tz)}–${T(e,m.tz)}</div></div>`}).join('')+
+  `<div class="setat"><b>Set the time from anyone’s clock</b><div class="row"><select id="sp" aria-label="Person">${S.m.map((m,i)=>`<option value="${i}" ${i==spi?'selected':''}>${esc(m.n)}</option>`).join('')}</select><input type="date" id="sd" value="${pp.y}-${pad(pp.mo)}-${pad(pp.d)}"><input type="time" id="stm" step="1800" value="${pad(pp.h)}:${pad(pp.mi)}"><button class="btn pri" id="sgo">Use this time</button></div><div class="row"><button class="btn" id="m30">‹ 30 min earlier</button><button class="btn" id="p30">30 min later ›</button></div></div>`+
+  `<div class="acts"><button class="btn pri" id="cpy">Copy invite text</button><a class="btn" target="_blank" rel="noopener" href="${gc}">Google Calendar</a><a class="btn" target="_blank" rel="noopener" href="https://wa.me/?text=${encodeURIComponent(txt)}">WhatsApp</a><a class="btn" href="mailto:?subject=${encodeURIComponent(S.title)}&body=${encodeURIComponent(txt)}">Email</a><button class="btn" id="ics">Download .ics</button><button class="btn" id="cpl">Copy planner link</button></div>`;
+ $('#cpy').onclick=()=>copy(txt,'Invite copied');
+ $('#cpl').onclick=()=>copy(location.href.split('#')[0].split('?')[0]+'?t='+selMs()+'&d='+S.dur+'&n='+encodeURIComponent(S.title),'Link copied. It opens on this exact time.');
+ $('#sp').onchange=e=>{spi=+e.target.value;renderSel()};
+ $('#sgo').onclick=()=>{const dv=$('#sd').value,tv=$('#stm').value;if(!dv||!tv){toast('Pick a date and a time first');return}const[y,mo,d]=dv.split('-').map(Number),[h,mi]=tv.split(':').map(Number);setFromMs(zoned(y,mo,d,h,mi,sm.tz))};
+ $('#m30').onclick=()=>setFromMs(selMs()-1800000);$('#p30').onclick=()=>setFromMs(selMs()+1800000);
+ $('#ics').onclick=()=>{const b=new Blob([icsText(txt)],{type:'text/calendar'}),a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='meeting.ics';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),1500)}
+ $('#dtx').innerHTML=`<b>${D(t,S.ref)} · ${T(t,S.ref)}–${T(e,S.ref)}</b><small>${esc(refName())} time</small>`;$('#dock').style.visibility='visible';$('#dcp').onclick=()=>copy(txt,'Invite copied');
+}
+function renderSet(){
+ $('#set').innerHTML=S.m.map((m,i)=>`<div class="mr"><i style="background:${m.c}"></i><input data-f="n" data-i="${i}" value="${esc(m.n)}" aria-label="Name"><input data-f="tz" data-i="${i}" list="tzl" value="${esc(m.tz)}" aria-label="Time zone"><input type="number" min="0" max="23" data-f="ws" data-i="${i}" value="${m.ws}" aria-label="Work starts (hour)" title="Work starts"><input type="number" min="1" max="24" data-f="we" data-i="${i}" value="${m.we}" aria-label="Work ends (hour)" title="Work ends"><label><input type="checkbox" data-f="on" data-i="${i}" ${m.on?'checked':''}> Include</label><button class="btn rm" data-r="${i}">Remove</button></div>`).join('');
+}
+function fillRef(){
+ const seen={},o=[];S.m.forEach(m=>{if(!seen[m.tz]){seen[m.tz]=1;o.push([m.tz,m.n+' · '+m.tz])}});
+ if(!seen[S.ref])S.ref=o.length?o[0][0]:'UTC';
+ if(!o.length)o.push(['UTC','UTC']);
+ $('#ref').innerHTML=o.map(x=>`<option value="${esc(x[0])}">${esc(x[1])}</option>`).join('');$('#ref').value=S.ref;
+}
+function all(){
+ fillRef();
+ if(!date)date=ymd(Date.now(),S.ref);
+ if(sel===null){const b=bestSlots();if(b.length)sel=b[0].i}
+ renderClocks();renderBest();renderGrid();renderSel();save();
+}
+function toast(t){const e=$('#toast');e.textContent=t;e.classList.add('on');clearTimeout(toast.t);toast.t=setTimeout(()=>e.classList.remove('on'),2400)}
+async function copy(t,msg){try{await navigator.clipboard.writeText(t)}catch(e){const a=document.createElement('textarea');a.value=t;document.body.appendChild(a);a.select();try{document.execCommand('copy')}catch(_){}a.remove()}toast(msg)}
+function scrollSel(){if(sel!==null){const cw=parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--cw'))||30;$('#scr').scrollTo({left:Math.max(0,sel*cw-90),behavior:'smooth'})}}
+function applyTheme(){const r=document.documentElement;S.theme==='auto'?r.removeAttribute('data-theme'):r.setAttribute('data-theme',S.theme);$('#thm').textContent='Theme: '+S.theme}
+
+/* events */
+$('#grid').addEventListener('click',e=>{const c=e.target.closest('[data-i]');if(c){sel=+c.dataset.i;all()}});
+$('#best').addEventListener('click',e=>{const c=e.target.closest('[data-b]');if(c){sel=+c.dataset.b;all();scrollSel();$('#sel').scrollIntoView({behavior:'smooth',block:'nearest'})}});
+$('#clocks').addEventListener('click',e=>{const c=e.target.closest('[data-tz]');if(c){S.ref=c.dataset.tz;sel=null;all()}});
+$('#title').oninput=e=>{S.title=e.target.value||'Team meeting';renderSel();save()};
+$('#date').onchange=e=>{if(e.target.value){date=e.target.value;all()}};
+const shift=n=>{const[y,m,d]=date.split('-').map(Number);date=new Date(Date.UTC(y,m-1,d+n)).toISOString().slice(0,10);$('#date').value=date;all()};
+$('#prev').onclick=()=>shift(-1);$('#next').onclick=()=>shift(1);
+$('#dur').onchange=e=>{S.dur=+e.target.value;all()};
+$('#ref').onchange=e=>{S.ref=e.target.value;date=ymd(Date.now(),S.ref);$('#date').value=date;sel=null;all()};
+$('#h24').onclick=()=>{S.h24=!S.h24;$('#h24').textContent=S.h24?'24-hour':'12-hour';all()};
+$('#thm').onclick=()=>{S.theme={auto:'light',light:'dark',dark:'auto'}[S.theme]||'auto';applyTheme();save()};
+$('#set').addEventListener('change',e=>{
+ const f=e.target.dataset.f,i=+e.target.dataset.i;if(!f)return;const m=S.m[i];
+ if(f==='on')m.on=e.target.checked;
+ else if(f==='n')m.n=e.target.value.trim()||m.n;
+ else if(f==='tz'){try{new Intl.DateTimeFormat('en-US',{timeZone:e.target.value});m.tz=e.target.value}catch(x){e.target.value=m.tz;toast('Unknown time zone. Try a name like Asia/Dhaka.')}}
+ else{let v=Math.round(+e.target.value);if(isNaN(v))v=m[f];m[f]=Math.min(24,Math.max(0,v));e.target.value=m[f]}
+ sel=null;all();
+});
+$('#set').addEventListener('click',e=>{const r=e.target.closest('[data-r]');if(r){S.m.splice(+r.dataset.r,1);sel=null;renderSet();all()}});
+$('#add').onclick=()=>{S.m.push(mk('New teammate','UTC',S.m.length));sel=null;renderSet();all()};
+$('#reset').onclick=()=>{const th=S.theme;S=fresh();S.theme=th;sel=null;date='';init()};
+
+function init(){
+ let h='';try{h=Intl.supportedValuesOf('timeZone').map(z=>`<option value="${z}">`).join('')}catch(e){}
+ $('#tzl').innerHTML=h;
+ $('#title').value=S.title;$('#dur').value=S.dur;$('#h24').textContent=S.h24?'24-hour':'12-hour';
+ fillRef();if(!date)date=ymd(Date.now(),S.ref);
+ const q=new URLSearchParams(location.search),qt=+q.get('t');
+ if(qt>0){if([30,45,60,90,120].includes(+q.get('d')))S.dur=+q.get('d');if(q.get('n'))S.title=q.get('n').slice(0,80);$('#title').value=S.title;$('#dur').value=S.dur;date=ymd(qt,S.ref);sel=Math.min(47,Math.max(0,Math.round((qt-dayStart())/1800000)))}
+ $('#date').value=date;
+ applyTheme();renderSet();all();setTimeout(scrollSel,250);
+}
+init();setInterval(renderClocks,20000);
+</script>
+</body>
+</html>
