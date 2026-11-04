@@ -6,7 +6,7 @@
 <title>Team Meeting Time Planner</title>
 <meta name="description" content="Find the best meeting time across time zones. See every teammate’s day at once, then share the exact time as a link.">
 <meta name="theme-color" content="#0b5d57">
-<meta property="og:title" content="Team Meeting Time Planner">
+<meta property="og:title" content="ISP Meeting Planner">
 <meta property="og:description" content="Find the kindest meeting time across time zones and share it in one link.">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 100 100%27%3E%3Ctext y=%27.9em%27 font-size=%2790%27%3E🌍%3C/text%3E%3C/svg%3E">
 <style>
@@ -143,7 +143,7 @@ details summary{cursor:pointer;font-weight:600;font-size:16px}
 const $=s=>document.querySelector(s);
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const COL=['#ef6c57','#3b82f6','#f5a524','#a855f7','#14b8a6','#ec4899','#84cc16','#64748b'];
-const DEF=[['California','America/Los_Angeles'],['Montreal','America/Toronto'],['Ghana','Africa/Accra'],['Switzerland','Europe/Zurich'],['Oman','Asia/Muscat'],['Bangladesh','Asia/Dhaka']];
+const DEF=[['VT','America/Los_Angeles'],['Maria','America/Toronto'],['Nyameye','Africa/Accra'],['James','Europe/Zurich'],['Aahana','Asia/Muscat'],['Tanjin','Asia/Dhaka']];
 const mk=(n,tz,i)=>({n,tz,ws:9,we:18,on:true,c:COL[i%8]});
 const fresh=()=>({m:DEF.map((d,i)=>mk(d[0],d[1],i)),dur:60,h24:false,title:'Neuromatch ISP team meeting',theme:'auto',ref:'Asia/Dhaka'});
 let S=fresh(),sel=null,date='',spi=0;
