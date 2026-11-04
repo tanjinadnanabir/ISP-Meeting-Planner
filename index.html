@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>ISP Meeting Planner</title>
-<meta name="description" content="Find the best meeting time across time zones. See every teammate’s day at once, then share the exact time as a link.">
+<meta name="description" content="Find the best meeting time across time zones. See supervisor and every teammate’s day at once, then share the exact time as a link.">
 <meta name="theme-color" content="#0b5d57">
 <meta property="og:title" content="ISP Meeting Planner">
 <meta property="og:description" content="Find the kindest meeting time across time zones and share it in one link.">
@@ -99,12 +99,13 @@ details summary{cursor:pointer;font-weight:600;font-size:16px}
  #dock b{display:block;font-size:14px;line-height:1.25}#dock small{color:var(--muted)}
 }
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
+.pz{border:1px solid var(--border);background:var(--card);color:var(--text);cursor:pointer;font-size:12px}.pz.on{background:var(--accent);border-color:var(--accent);color:#fff}
 </style>
 </head>
 <body>
 <main class="wrap">
 <header class="hero">
- <div><h1>🌍 Meeting Time Planner</h1><p>See every teammate’s day at once, find the kindest overlap, then share the exact time as a link.</p></div>
+ <div><h1>🌍 ISP Meeting Planner</h1><p>See supervisor and every teammate’s day at once, find the kindest overlap, then share the exact time as a link.</p></div>
  <div class="row"><button class="btn" id="h24">12-hour</button><button class="btn" id="thm">Theme: auto</button></div>
 </header>
 
@@ -113,7 +114,7 @@ details summary{cursor:pointer;font-weight:600;font-size:16px}
 <section class="card ctl">
  <label>Meeting title<input id="title" maxlength="80"></label>
  <label>Date<div class="dt"><button class="btn" id="prev" aria-label="Previous day">‹</button><input type="date" id="date"><button class="btn" id="next" aria-label="Next day">›</button></div></label>
- <label>Length<select id="dur"><option value="30">30 min</option><option value="45">45 min</option><option value="60">60 min</option><option value="90">90 min</option><option value="120">2 hours</option></select></label>
+ <label>Length in hours<input type="number" id="dur" min="0.25" max="12" step="0.25" inputmode="decimal"></label>
  <label>Timeline in<select id="ref"></select></label>
 </section>
 
@@ -145,7 +146,7 @@ const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',
 const COL=['#ef6c57','#3b82f6','#f5a524','#a855f7','#14b8a6','#ec4899','#84cc16','#64748b'];
 const DEF=[['VT','America/Los_Angeles'],['Maria','America/Toronto'],['Nyameye','Africa/Accra'],['James','Europe/Zurich'],['Aahana','Asia/Muscat'],['Tanjin','Asia/Dhaka']];
 const mk=(n,tz,i)=>({n,tz,ws:9,we:18,on:true,c:COL[i%8]});
-const fresh=()=>({m:DEF.map((d,i)=>mk(d[0],d[1],i)),dur:60,h24:false,title:'Neuromatch ISP team meeting',theme:'auto',ref:'Asia/Dhaka'});
+const fresh=()=>({m:DEF.map((d,i)=>mk(d[0],d[1],i)),dur:60,h24:false,title:'ISP Team Meeting',theme:'auto',ref:'Asia/Dhaka'});
 let S=fresh(),sel=null,date='',spi=0;
 try{const r=JSON.parse(localStorage.getItem('mtp-v1')||'null');if(r&&r.m&&r.m.length)S=Object.assign(fresh(),r)}catch(e){}
 const save=()=>{try{localStorage.setItem('mtp-v1',JSON.stringify(S))}catch(e){}};
@@ -181,6 +182,7 @@ function bestSlots(){
 function setFromMs(ms){date=ymd(ms,S.ref);const st=dayStart();sel=Math.min(47,Math.max(0,Math.round((ms-st)/1800000)));$('#date').value=date;all();scrollSel()}
 
 /* renderers */
+const fd=m=>m<60?m+' min':(m%60?Math.floor(m/60)+'h '+m%60+'m':m/60+'h');
 function renderClocks(){
  const now=Date.now();
  $('#clocks').innerHTML=S.m.map((m,i)=>{const p=P(now,m.tz),k=cl(now,m),h=p.h;
@@ -209,7 +211,7 @@ function renderGrid(){
    h+=`<div class="c k${k}" data-i="${i}" title="${esc(m.n)}: ${p.wd} ${T(t,m.tz)}">${txt}</div>`}
  }
  const nx=(now-st)/1800000;
- if(sel!==null)h+=`<div class="ov" style="left:calc(var(--lw) + ${sel}*var(--cw));width:calc(${S.dur/30}*var(--cw))"></div>`;
+ if(sel!==null)h+=`<div class="ov" style="left:calc(var(--lw) + ${sel}*var(--cw));width:calc(${Math.min(S.dur/30,48-sel)}*var(--cw))"></div>`;
  if(nx>=0&&nx<48)h+=`<div class="now" style="left:calc(var(--lw) + ${nx}*var(--cw))"></div>`;
  $('#grid').innerHTML=h;
 }
@@ -226,7 +228,7 @@ function renderSel(){
  if(spi>=S.m.length)spi=0;const sm=S.m[spi];
  const gc='https://calendar.google.com/calendar/render?action=TEMPLATE&text='+encodeURIComponent(S.title)+'&dates='+zf(t)+'/'+zf(e)+'&details='+encodeURIComponent(txt);
  const pp=P(t,sm.tz);
- el.innerHTML=`<h2>Your meeting</h2><div class="big">${esc(S.title)}</div><div class="tag" style="margin-bottom:4px">${D(t,S.ref)}, ${T(t,S.ref)}–${T(e,S.ref)} in ${esc(refName())} · ${S.dur} min · comfort ${comfort(A.map(m=>worst(t,m,S.dur)))}%</div>`+
+ el.innerHTML=`<h2>Your meeting</h2><div class="big">${esc(S.title)}</div><div class="tag" style="margin-bottom:4px">${D(t,S.ref)}, ${T(t,S.ref)}–${T(e,S.ref)} in ${esc(refName())} · ${fd(S.dur)} · comfort ${comfort(A.map(m=>worst(t,m,S.dur)))}%</div>`+
   (worstAll==2?'<p class="hint">🌙 This slot is at night for someone. “Best times for this day” has kinder options.</p>':'')+
   A.map(m=>{const k=worst(t,m,S.dur);return `<div class="sr"><i style="background:${m.c}"></i><div><b>${esc(m.n)}</b> <span class="tag">${OL(t,m.tz)}</span></div><span class="ch k${k}">${SL[k]}</span><div class="tm">${D(t,m.tz)} · ${T(t,m.tz)}–${T(e,m.tz)}</div></div>`}).join('')+
   `<div class="setat"><b>Set the time from anyone’s clock</b><div class="row"><select id="sp" aria-label="Person">${S.m.map((m,i)=>`<option value="${i}" ${i==spi?'selected':''}>${esc(m.n)}</option>`).join('')}</select><input type="date" id="sd" value="${pp.y}-${pad(pp.mo)}-${pad(pp.d)}"><input type="time" id="stm" step="1800" value="${pad(pp.h)}:${pad(pp.mi)}"><button class="btn pri" id="sgo">Use this time</button></div><div class="row"><button class="btn" id="m30">‹ 30 min earlier</button><button class="btn" id="p30">30 min later ›</button></div></div>`+
@@ -267,7 +269,8 @@ $('#title').oninput=e=>{S.title=e.target.value||'Team meeting';renderSel();save(
 $('#date').onchange=e=>{if(e.target.value){date=e.target.value;all()}};
 const shift=n=>{const[y,m,d]=date.split('-').map(Number);date=new Date(Date.UTC(y,m-1,d+n)).toISOString().slice(0,10);$('#date').value=date;all()};
 $('#prev').onclick=()=>shift(-1);$('#next').onclick=()=>shift(1);
-$('#dur').onchange=e=>{S.dur=+e.target.value;all()};
+const setDur=h=>{h=Math.min(12,Math.max(.25,Math.round((+h||1)*4)/4));S.dur=Math.round(h*60);$('#dur').value=h;all()};
+$('#dur').onchange=e=>setDur(e.target.value);
 $('#ref').onchange=e=>{S.ref=e.target.value;date=ymd(Date.now(),S.ref);$('#date').value=date;sel=null;all()};
 $('#h24').onclick=()=>{S.h24=!S.h24;$('#h24').textContent=S.h24?'24-hour':'12-hour';all()};
 $('#thm').onclick=()=>{S.theme={auto:'light',light:'dark',dark:'auto'}[S.theme]||'auto';applyTheme();save()};
@@ -286,10 +289,10 @@ $('#reset').onclick=()=>{const th=S.theme;S=fresh();S.theme=th;sel=null;date='';
 function init(){
  let h='';try{h=Intl.supportedValuesOf('timeZone').map(z=>`<option value="${z}">`).join('')}catch(e){}
  $('#tzl').innerHTML=h;
- $('#title').value=S.title;$('#dur').value=S.dur;$('#h24').textContent=S.h24?'24-hour':'12-hour';
+ $('#title').value=S.title;$('#dur').value=+(S.dur/60).toFixed(2);$('#h24').textContent=S.h24?'24-hour':'12-hour';
  fillRef();if(!date)date=ymd(Date.now(),S.ref);
  const q=new URLSearchParams(location.search),qt=+q.get('t');
- if(qt>0){if([30,45,60,90,120].includes(+q.get('d')))S.dur=+q.get('d');if(q.get('n'))S.title=q.get('n').slice(0,80);$('#title').value=S.title;$('#dur').value=S.dur;date=ymd(qt,S.ref);sel=Math.min(47,Math.max(0,Math.round((qt-dayStart())/1800000)))}
+ if(qt>0){if(+q.get('d')>=15&&+q.get('d')<=720)S.dur=+q.get('d');if(q.get('n'))S.title=q.get('n').slice(0,80);$('#title').value=S.title;$('#dur').value=+(S.dur/60).toFixed(2);date=ymd(qt,S.ref);sel=Math.min(47,Math.max(0,Math.round((qt-dayStart())/1800000)))}
  $('#date').value=date;
  applyTheme();renderSet();all();setTimeout(scrollSel,250);
 }
